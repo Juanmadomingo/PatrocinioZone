@@ -1,0 +1,59 @@
+<diagram program="umletino" version="15.1"><zoom_level>10</zoom_level><element><id>UMLClass</id><coordinates><x>30</x><y>210</y><w>210</w><h>90</h></coordinates><panel_attributes>&lt;&lt;App&gt;&gt;
+--
+- nombre: String
+--</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>430</x><y>30</y><w>210</w><h>140</h></coordinates><panel_attributes>/&lt;&lt;Usuario&gt;&gt;/
+--
+- nombre: String
+- email: String
+- pass: String
+- id: int
+--
+- login()
+- logout()
+- actualizarPerfil()</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>130</x><y>80</y><w>320</w><h>150</h></coordinates><panel_attributes>lt=&lt;-
+-usuarios
+m1=*</panel_attributes><additional_attributes>300;20;10;20;10;130</additional_attributes></element><element><id>UMLClass</id><coordinates><x>410</x><y>250</y><w>210</w><h>130</h></coordinates><panel_attributes>&lt;&lt;Club&gt;&gt;
+--
+
+--
++ publicarOferta()</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>780</x><y>250</y><w>210</w><h>130</h></coordinates><panel_attributes>&lt;&lt;Patrocinador&gt;&gt;
+--
+- presupuesto: double
+--
+- buscarClubes()
++ hacerOferta()
++ negociar()</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>190</x><y>480</y><w>80</w><h>110</h></coordinates><panel_attributes>&lt;&lt;enum&gt;&gt;
+Deporte
+--
+_+FUTBOL_
+_+VOLEY_
+_+BASQUET_
+
+
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>210</x><y>330</y><w>210</w><h>170</h></coordinates><panel_attributes>lt=&lt;-
+- deporte
+m1=1</panel_attributes><additional_attributes>10;150;10;20;190;20</additional_attributes></element><element><id>Relation</id><coordinates><x>570</x><y>370</y><w>350</w><h>90</h></coordinates><panel_attributes>lt=&lt;-
+- sponsoreados
+m1=*</panel_attributes><additional_attributes>10;10;10;70;330;70;330;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>380</x><y>470</y><w>210</w><h>130</h></coordinates><panel_attributes>&lt;&lt;ZonaPatrocinio&gt;&gt;
+--
+- tamanio: double
+- estadoReservado: boolean
+--
++ actualizarPrecio()
++ reservar()</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>480</x><y>370</y><w>70</w><h>120</h></coordinates><panel_attributes>lt=&lt;-
+- zonas
+m1=*</panel_attributes><additional_attributes>10;100;10;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>800</x><y>470</y><w>90</w><h>130</h></coordinates><panel_attributes>&lt;&lt;enum&gt;&gt;
+Ubicacion
+--
+_+ PECHO_
+_+ ESPALDA_
+_+ BRAZO_
+_+ PANTALON_
+
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>580</x><y>510</y><w>240</w><h>50</h></coordinates><panel_attributes>lt=&lt;-
+ -ubicacion
+m1=1</panel_attributes><additional_attributes>220;20;10;20</additional_attributes></element><element><id>Relation</id><coordinates><x>230</x><y>260</y><w>200</w><h>50</h></coordinates><panel_attributes>lt=&lt;-
+- clubes
+m1=*</panel_attributes><additional_attributes>180;20;10;20</additional_attributes></element><element><id>Relation</id><coordinates><x>230</x><y>200</y><w>690</w><h>70</h></coordinates><panel_attributes>lt=&lt;-
+- patrocinadores
+m1=*</panel_attributes><additional_attributes>660;50;660;20;10;20</additional_attributes></element></diagram>
