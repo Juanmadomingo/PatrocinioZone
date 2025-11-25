@@ -1,13 +1,19 @@
-﻿using System.Collections.Generic;
-
-namespace PatrocinioZoneProyecto.Models
+﻿namespace PatrocinioZoneProyecto.Models
 {
     public class Patrocinador : Usuario
     {
-        public string Empresa { get; set; }
-        public string Telefono { get; set; }
+        public string Empresa { get; set; } = string.Empty;
+        public string Telefono { get; set; } = string.Empty;
 
-        // 👇 Agregá esta propiedad
-        public List<Club> ClubsPatrocinados { get; set; } = new List<Club>();
+        // Usamos decimal para representar dinero de manera segura
+        public decimal Monto { get; set; } = 0m;
+
+        // Inicializamos la lista para evitar nulls
+        public List<ZonaPatrocinio> Zonas { get; set; } = new List<ZonaPatrocinio>();
     }
 }
+
+
+
+
+

@@ -3,16 +3,28 @@ using PatrocinioZoneProyecto.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1️⃣ Agregar controladores con vistas (NO solo controllers)
-builder.Services.AddControllersWithViews();
+// ====================================
+// 🔌 1. Cadena de conexión SQL Server
+// ====================================
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? "Server=localhost;Database=PatrocinioDB;User Id=TU_USUARIO_SQL;Password=TU_CONTRASEÑA_SQL;TrustServerCertificate=True;";
 
-// 2️⃣ Configurar la conexión a la base de datos
+// ====================================
+// 🧱 2. Registrar DbContext
+// ====================================
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(connectionString));
+
+// ====================================
+// 🌐 3. Agregar controladores y vistas MVC
+// ====================================
+builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-// 3️⃣ Configurar pipeline
+// ====================================
+// 🏁 4. Middlewares
+// ====================================
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -23,11 +35,14 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
 app.UseAuthorization();
 
-// 4️⃣ Habilitar rutas MVC
+// ====================================
+// 🏠 5. Rutas por defecto
+// ====================================
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Club}/{action=Index}/{id?}");
-
+    pattern: "{controller=Account}/{action=Login}/{id?}");
 app.Run();
+

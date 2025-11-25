@@ -1,20 +1,11 @@
 ﻿namespace PatrocinioZoneProyecto.Models
 {
-    public class Usuario
+    // Clase base NO mapeada (DbContext la ignora)
+    public abstract class Usuario
     {
-        public int Id { get; set; }
+        public int Id { get; set; }   // PK heredada por Club y Patrocinador
         public string Nombre { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
-
-        // Constructor vacío requerido por Entity Framework
-        public Usuario() { }
-
-        // Constructor con parámetros
-        public Usuario(int id, string nombre, string email)
-        {
-            Id = id;
-            Nombre = nombre;
-            Email = email;
-        }
+        public string Password { get; set; } = string.Empty;
     }
 }

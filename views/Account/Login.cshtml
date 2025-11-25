@@ -1,0 +1,20 @@
+@model PatrocinioZoneProyecto.Models.LoginViewModel
+
+<h2>Login</h2>
+
+<form asp-action="Login" method="post">
+    <div>
+        <label>Email:</label>
+        <input asp-for="Email" />
+    </div>
+    <div>
+        <label>Password:</label>
+        <input asp-for="Password" type="password" />
+    </div>
+    <button type="submit">Iniciar sesión</button>
+</form>
+
+<!-- Botón para ir a Register -->
+<form asp-action="Register" method="get" style="margin-top:10px;">
+    <button type="submit">No tienes cuenta? Registrate aquí</button>
+</form>

@@ -1,0 +1,37 @@
+# Visual Studio cache
+.vs/
+.vscode/
+
+# Build outputs
+bin/
+obj/
+out/
+debug/
+release/
+
+# User-specific files
+*.user
+*.userosscache
+*.sln*
+*.suo
+
+# Razor generated files
+**/rjsm*.cache.json
+**/rpswa*.cache.json
+
+# Logs
+*.log
+
+# ASP.NET data
+*.db
+*.sqlite
+*.mdf
+*.ldf
+
+# Publish folder
+publish/
+
+# Other
+*.pdb
+*.cache
+*.tmp
