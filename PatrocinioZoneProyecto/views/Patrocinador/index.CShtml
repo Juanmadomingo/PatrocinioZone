@@ -1,0 +1,28 @@
+@model IEnumerable<PatrocinioZoneProyecto.Models.ZonaPatrocinio>
+
+    <h2>Zonas disponibles para patrocinar</h2>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Zona</th>
+                <th>Club</th>
+                <th>Precio</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var zona in Model)
+        {
+            <tr>
+                <td>@zona.Nombre</td>
+                <td>@zona.Club.Nombre</td>
+                <td>$@zona.Precio</td>
+
+                <td>
+                    <a href="/Patrocinador/Comprar/@zona.Id" class="btn btn-success">Comprar</a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>

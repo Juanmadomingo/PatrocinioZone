@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using PatrocinioZoneProyecto.Data;
 using PatrocinioZoneProyecto.Models;
 
@@ -13,92 +14,40 @@ namespace PatrocinioZoneProyecto.Controllers
             _context = context;
         }
 
-        // GET: Patrocinador
         public IActionResult Index()
         {
-            var patrocinadores = _context.Patrocinadores.ToList();
-            return View(patrocinadores);
+            int? patId = HttpContext.Session.GetInt32("PatrocinadorId");
+            if (patId == null) return RedirectToAction("Login", "Account");
+
+            var zonas = _context.ZonasPatrocinio
+                .Where(z => z.PatrocinadorId == null)
+                .Include(z => z.Club)
+                .ToList();
+
+            return View(zonas);
         }
 
-        // GET: Patrocinador/Details/5
-        public IActionResult Details(int id)
+        public IActionResult Comprar(int id)
         {
-            var patrocinador = _context.Patrocinadores.FirstOrDefault(p => p.Id == id);
-            if (patrocinador == null)
-                return NotFound();
+            var zona = _context.ZonasPatrocinio.Include(z => z.Club)
+                    .FirstOrDefault(z => z.Id == id);
 
-            return View(patrocinador);
+            return View(zona);
         }
 
-        // GET: Patrocinador/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Patrocinador/Create
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Create(Patrocinador patrocinador)
+        public IActionResult ComprarConfirmado(int id)
         {
-            if (ModelState.IsValid)
-            {
-                _context.Patrocinadores.Add(patrocinador);
-                _context.SaveChanges();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(patrocinador);
-        }
+            int? patId = HttpContext.Session.GetInt32("PatrocinadorId");
+            if (patId == null) return RedirectToAction("Login", "Account");
 
-        // GET: Patrocinador/Edit/5
-        public IActionResult Edit(int id)
-        {
-            var patrocinador = _context.Patrocinadores.Find(id);
-            if (patrocinador == null)
-                return NotFound();
+            var zona = _context.ZonasPatrocinio.Find(id);
 
-            return View(patrocinador);
-        }
+            zona.PatrocinadorId = patId.Value;
+            _context.SaveChanges();
 
-        // POST: Patrocinador/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, Patrocinador patrocinador)
-        {
-            if (id != patrocinador.Id)
-                return NotFound();
-
-            if (ModelState.IsValid)
-            {
-                _context.Update(patrocinador);
-                _context.SaveChanges();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(patrocinador);
-        }
-
-        // GET: Patrocinador/Delete/5
-        public IActionResult Delete(int id)
-        {
-            var patrocinador = _context.Patrocinadores.FirstOrDefault(p => p.Id == id);
-            if (patrocinador == null)
-                return NotFound();
-
-            return View(patrocinador);
-        }
-
-        // POST: Patrocinador/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public IActionResult DeleteConfirmed(int id)
-        {
-            var patrocinador = _context.Patrocinadores.Find(id);
-            if (patrocinador != null)
-            {
-                _context.Patrocinadores.Remove(patrocinador);
-                _context.SaveChanges();
-            }
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index");
         }
     }
 }
+

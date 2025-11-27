@@ -14,88 +14,51 @@ namespace PatrocinioZoneProyecto.Controllers
             _context = context;
         }
 
-        // GET: Club
         public IActionResult Index()
         {
-            var clubes = _context.Clubes.ToList();
-            return View(clubes);
+            int? clubId = HttpContext.Session.GetInt32("ClubId");
+            if (clubId == null) return RedirectToAction("Login", "Account");
+
+            var zonas = _context.ZonasPatrocinio
+                .Where(z => z.ClubId == clubId)
+                .Include(z => z.Patrocinador)
+                .ToList();
+
+            return View(zonas);
         }
 
-        // GET: Club/Details/5
-        public IActionResult Details(int id)
-        {
-            var club = _context.Clubes.FirstOrDefault(m => m.Id == id);
-            if (club == null) return NotFound();
-
-            return View(club);
-        }
-
-        // GET: Club/Create
-        public IActionResult Create()
+        // CREAR ZONA
+        public IActionResult CrearZona()
         {
             return View();
         }
 
-        // POST: Club/Create
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Create(Club club)
+        public IActionResult CrearZona(ZonaPatrocinio zona)
         {
-            if (ModelState.IsValid)
-            {
-                _context.Clubes.Add(club);
-                _context.SaveChanges();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(club);
+            int? clubId = HttpContext.Session.GetInt32("ClubId");
+            if (clubId == null) return RedirectToAction("Login", "Account");
+
+            zona.ClubId = clubId.Value;
+
+            _context.ZonasPatrocinio.Add(zona);
+            _context.SaveChanges();
+
+            return RedirectToAction("Index");
         }
 
-        // GET: Club/Edit/5
-        public IActionResult Edit(int id)
+        // VER ZONAS VENDIDAS / NO VENDIDAS
+        public IActionResult Zonas()
         {
-            var club = _context.Clubes.Find(id);
-            if (club == null) return NotFound();
+            int? clubId = HttpContext.Session.GetInt32("ClubId");
+            if (clubId == null) return RedirectToAction("Login", "Account");
 
-            return View(club);
-        }
+            var zonas = _context.ZonasPatrocinio
+                .Where(z => z.ClubId == clubId)
+                .Include(z => z.Patrocinador)
+                .ToList();
 
-        // POST: Club/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, Club club)
-        {
-            if (id != club.Id) return NotFound();
-
-            if (ModelState.IsValid)
-            {
-                _context.Update(club);
-                _context.SaveChanges();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(club);
-        }
-
-        // GET: Club/Delete/5
-        public IActionResult Delete(int id)
-        {
-            var club = _context.Clubes.FirstOrDefault(m => m.Id == id);
-            if (club == null) return NotFound();
-
-            return View(club);
-        }
-
-        // POST: Club/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public IActionResult DeleteConfirmed(int id)
-        {
-            var club = _context.Clubes.Find(id);
-            if (club != null)
-            {
-                _context.Clubes.Remove(club);
-                _context.SaveChanges();
-            }
-            return RedirectToAction(nameof(Index));
+            return View(zonas);
         }
     }
 }

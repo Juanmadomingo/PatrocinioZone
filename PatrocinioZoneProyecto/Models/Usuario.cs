@@ -6,10 +6,11 @@
         public string Nombre { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
 
-        // Constructor vacío requerido por Entity Framework
+        // 🔥 Nuevo campo
+        public string Password { get; set; } = string.Empty;
+
         public Usuario() { }
 
-        // Constructor con parámetros
         public Usuario(int id, string nombre, string email)
         {
             Id = id;

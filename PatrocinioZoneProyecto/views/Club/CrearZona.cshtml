@@ -1,0 +1,19 @@
+@model PatrocinioZoneProyecto.Models.ZonaPatrocinio
+
+<h2>Crear Zona</h2>
+
+<form asp-action="CrearZona" method="post">
+
+    <div class="mb-3">
+        <label>Nombre</label>
+        <input asp-for="Nombre" class="form-control" required />
+    </div>
+
+    <div class="mb-3">
+        <label>Monto</label>
+        <input asp-for="Monto" type="number" step="0.01" class="form-control" required />
+    </div>
+
+    <button class="btn btn-success">Crear</button>
+
+</form>

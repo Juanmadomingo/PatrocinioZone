@@ -1,37 +1,29 @@
-@model IEnumerable<PatrocinioZoneProyecto.Models.Club>
+@model IEnumerable<PatrocinioZoneProyecto.Models.ZonaPatrocinio>
 
-    @{
-    ViewData["Title"] = "Clubes";
-    }
+    <h2>Zonas del Club</h2>
 
-    <h2>Clubes registrados</h2>
-
-    <p>
-        <a class="btn btn-primary" asp-action="Create">+ Nuevo Club</a>
-    </p>
+    <a class="btn btn-primary mb-3" href="/Club/CrearZona">Crear nueva zona</a>
 
     <table class="table table-striped">
         <thead>
             <tr>
                 <th>Nombre</th>
-                <th>Email</th>
-                <th>Deporte</th>
-                <th>Acciones</th>
+                <th>Precio</th>
+                <th>Vendida</th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in Model)
-            {
+            @foreach (var zona in Model)
+        {
             <tr>
-                <td>@item.Nombre</td>
-                <td>@item.Email</td>
-                <td>@item.Deporte.ToString()</td>
+                <td>@zona.Nombre</td>
+                <td>$@zona.Precio</td>
+                <td>@(zona.PatrocinadorId != null ? "Sí" : "No")</td>
+
                 <td>
-                    <a class="btn btn-info btn-sm" asp-action="Details" asp-route-id="@item.Id">Ver</a>
-                    <a class="btn btn-warning btn-sm" asp-action="Edit" asp-route-id="@item.Id">Editar</a>
-                    <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@item.Id">Eliminar</a>
+                    <a class="btn btn-warning" href="/Club/EditarZona/@zona.Id">Editar</a>
                 </td>
             </tr>
-            }
+        }
         </tbody>
     </table>

@@ -1,0 +1,16 @@
+@model PatrocinioZoneProyecto.Models.ZonaPatrocinio
+
+<h2>Comprar Zona</h2>
+
+<div class="card p-3">
+    <h4>@Model.Nombre</h4>
+    <p>@Model.Descripcion</p>
+
+    <p><strong>Precio:</strong> $@Model.Precio</p>
+
+    <form method="post">
+        <button type="submit" class="btn btn-primary">
+            Confirmar compra
+        </button>
+    </form>
+</div>

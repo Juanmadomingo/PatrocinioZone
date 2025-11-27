@@ -1,0 +1,32 @@
+@model IEnumerable<PatrocinioZoneProyecto.Models.ZonaPatrocinio>
+
+    <h2>Zonas disponibles</h2>
+
+    <div class="row">
+        @foreach (var zona in Model)
+    {
+        <div class="col-4 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h4>@zona.Nombre</h4>
+                    <p>@zona.Descripcion</p>
+                    <p><strong>Club:</strong> @zona.Club.Nombre</p>
+                    <p><strong>Precio:</strong> $@zona.Precio</p>
+
+                    @if (zona.PatrocinadorId == null)
+                    {
+                    <form asp-action="Comprar" method="post">
+                        <input type="hidden" name="zonaId" value="@zona.Id" />
+                        <input type="hidden" name="patrocinadorId" value="1" />
+                        <button class="btn btn-success">Comprar</button>
+                    </form>
+                    }
+                    else
+                    {
+                    <span class="badge bg-danger">VENDIDA</span>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+    </div>

@@ -1,0 +1,23 @@
+@model IEnumerable<PatrocinioZoneProyecto.Models.ZonaPatrocinio>
+
+    <h2>Zonas del Club</h2>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Precio</th>
+                <th>Vendida</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var z in Model)
+        {
+            <tr>
+                <td>@z.Nombre</td>
+                <td>$@z.Precio</td>
+                <td>@(z.PatrocinadorId != null ? "Sí" : "No")</td>
+            </tr>
+        }
+        </tbody>
+    </table>
