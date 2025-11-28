@@ -1,34 +1,54 @@
-@model IEnumerable<PatrocinioZoneProyecto.Models.ZonaPatrocinio>
+@model PatrocinioZoneProyecto.Models.Club
 
-    <h2>Zonas del Club</h2>
-
-    @if (TempData["Success"] != null)
-{
-    <div class="alert alert-success">@TempData["Success"]</div>
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Panel de Club";
 }
 
-    <a class="btn btn-primary mb-3" href="/Club/CrearZona">Crear nueva zona</a>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h2>@Model.Nombre</h2>
+        <div class="text-muted">Monto acumulado: <strong>$@Model.MontoBase</strong></div>
+    </div>
+    <div>
+        <a asp-controller="Club" asp-action="CreateZona" class="btn btn-primary">Crear zona patrocinio</a>
+        <a asp-controller="Account" asp-action="Logout" class="btn btn-outline-secondary ms-2">Cerrar sesión</a>
+    </div>
+</div>
 
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Nombre</th>
-                <th>Descripción</th>
-                <th>Precio</th>
-                <th>Ubicación</th>
-                <th>Vendida</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var zona in Model)
+<h3 class="mt-4">Mis patrocinios</h3>
+
+<table class="table table-striped mt-2">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Ubicación</th>
+            <th>Precio</th>
+            <th>Estado</th>
+            <th>Comprador</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var z in Model.Zonas)
         {
             <tr>
-                <td>@zona.Nombre</td>
-                <td>@zona.Descripcion</td>
-                <td>$@zona.Precio</td>
-                <td>@zona.Ubicacion</td>
-                <td>@(zona.PatrocinadorId != null ? "Sí" : "No")</td>
+                <td>@z.Nombre</td>
+                <td>@z.Ubicacion</td>
+                <td>$@z.Precio</td>
+                <td>@(z.PatrocinadorId == null ? "En venta" : "Vendido")</td>
+                <td>@(z.Patrocinador != null ? z.Patrocinador.Nombre : "-")</td>
+                <td>
+                    @if (z.PatrocinadorId == null)
+                    {
+                        <form asp-controller="Club" asp-action="DeleteZona" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@z.Id" />
+                            <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                        </form>
+                    }
+                </td>
             </tr>
         }
-        </tbody>
-    </table>
+    </tbody>
+</table>

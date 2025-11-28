@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PatrocinioZoneProyecto.Data;
 using PatrocinioZoneProyecto.Models;
+using Microsoft.AspNetCore.Http;
+using System.Linq;
 
 namespace PatrocinioZoneProyecto.Controllers
 {
@@ -14,64 +16,104 @@ namespace PatrocinioZoneProyecto.Controllers
             _context = context;
         }
 
-        // ========================
-        //   INDEX ZONAS DEL CLUB
-        // ========================
+        // Dashboard del club: muestra monto y sus zonas (mis patrocinios)
         public IActionResult Index()
         {
             int? clubId = HttpContext.Session.GetInt32("UserId");
             if (clubId == null || HttpContext.Session.GetString("UserType") != "Club")
                 return RedirectToAction("Login", "Account");
 
-            var zonas = _context.ZonasPatrocinio
-                .Where(z => z.ClubId == clubId)
-                .Include(z => z.Patrocinador)
-                .ToList();
+            var club = _context.Clubes
+                .Include(c => c.Zonas)
+                    .ThenInclude(z => z.Patrocinador)
+                .FirstOrDefault(c => c.Id == clubId.Value);
 
-            return View(zonas);
+            if (club == null) return NotFound();
+
+            return View(club);
         }
 
-        // ========================
-        //   CREAR ZONA GET
-        // ========================
-        public IActionResult CrearZona()
-        {
-            ViewBag.Ubicaciones = Enum.GetValues(typeof(Ubicacion));
-            return View();
-        }
-
-        // ========================
-        //   CREAR ZONA POST
-        // ========================
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult CrearZona(ZonaPatrocinio zona)
+        // GET: Crear zona de patrocinio
+        public IActionResult CreateZona()
         {
             int? clubId = HttpContext.Session.GetInt32("UserId");
             if (clubId == null || HttpContext.Session.GetString("UserType") != "Club")
                 return RedirectToAction("Login", "Account");
 
+            return View(new ZonaPatrocinio());
+        }
+
+        // POST: Crear zona de patrocinio
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult CreateZona(ZonaPatrocinio zona)
+        {
+            int? clubId = HttpContext.Session.GetInt32("UserId");
+            if (clubId == null || HttpContext.Session.GetString("UserType") != "Club")
+                return RedirectToAction("Login", "Account");
+
+            // Validaciones básicas del modelo
             if (!ModelState.IsValid)
+                return View(zona);
+
+            // No permitir crear otra zona en la misma ubicacion para este club (única por ubicación)
+            bool existsSameUbicacion = _context.ZonasPatrocinio
+                .Any(z => z.ClubId == clubId.Value && z.Ubicacion == zona.Ubicacion);
+
+            if (existsSameUbicacion)
             {
-                ViewBag.Ubicaciones = Enum.GetValues(typeof(Ubicacion));
+                ModelState.AddModelError(nameof(zona.Ubicacion), "Ya existe una zona con esa ubicación para tu club.");
                 return View(zona);
             }
 
-            try
-            {
-                zona.ClubId = clubId.Value;
-                _context.ZonasPatrocinio.Add(zona);
-                _context.SaveChanges();
+            zona.ClubId = clubId.Value;
+            _context.ZonasPatrocinio.Add(zona);
+            _context.SaveChanges();
 
-                TempData["Success"] = "Zona creada correctamente.";
-                return RedirectToAction("Index");
-            }
-            catch
+            TempData["Success"] = "Zona creada y publicada a la venta.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        // Ver detalles de una zona (opcional)
+        public IActionResult DetailsZona(int id)
+        {
+            int? clubId = HttpContext.Session.GetInt32("UserId");
+            if (clubId == null || HttpContext.Session.GetString("UserType") != "Club")
+                return RedirectToAction("Login", "Account");
+
+            var zona = _context.ZonasPatrocinio
+                .Include(z => z.Patrocinador)
+                .Include(z => z.Club)
+                .FirstOrDefault(z => z.Id == id && z.ClubId == clubId.Value);
+
+            if (zona == null) return NotFound();
+
+            return View(zona);
+        }
+
+        // Opcional: eliminar zona si aún no fue vendida
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteZona(int id)
+        {
+            int? clubId = HttpContext.Session.GetInt32("UserId");
+            if (clubId == null || HttpContext.Session.GetString("UserType") != "Club")
+                return RedirectToAction("Login", "Account");
+
+            var zona = _context.ZonasPatrocinio.FirstOrDefault(z => z.Id == id && z.ClubId == clubId.Value);
+            if (zona == null) return NotFound();
+
+            if (zona.PatrocinadorId != null)
             {
-                TempData["Error"] = "Ocurrió un error al crear la zona.";
-                ViewBag.Ubicaciones = Enum.GetValues(typeof(Ubicacion));
-                return View(zona);
+                TempData["Error"] = "No se puede eliminar una zona que ya fue vendida.";
+                return RedirectToAction(nameof(Index));
             }
+
+            _context.ZonasPatrocinio.Remove(zona);
+            _context.SaveChanges();
+
+            TempData["Success"] = "Zona eliminada.";
+            return RedirectToAction(nameof(Index));
         }
     }
 }

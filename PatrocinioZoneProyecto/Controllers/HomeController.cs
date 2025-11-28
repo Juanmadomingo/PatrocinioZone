@@ -1,19 +1,25 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 
-public class HomeController : Controller
+namespace PatrocinioZoneProyecto.Controllers
 {
-    public IActionResult Index()
+    public class HomeController : Controller
     {
-        // Si ya está logueado, redirigir según tipo
-        var tipo = HttpContext.Session.GetString("UserType");
-        if (tipo == "Club") return RedirectToAction("Index", "Club");
-        if (tipo == "Patrocinador") return RedirectToAction("Index", "Patrocinador");
+        public IActionResult Index()
+        {
+            var userType = HttpContext.Session.GetString("UserType");
+            if (string.IsNullOrEmpty(userType))
+                return RedirectToAction("Login", "Account");
 
-        return View();
-    }
+            // Redirigir según tipo de usuario
+            if (userType == "Club")
+                return RedirectToAction("Index", "Club");
 
-    public IActionResult SeleccionTipoUsuario()
-    {
-        return View();
+            if (userType == "Patrocinador")
+                return RedirectToAction("Index", "Patrocinador");
+
+            // fallback
+            return View();
+        }
     }
 }

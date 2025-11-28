@@ -4,13 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PatrocinioZoneProyecto
+namespace PatrocinioZoneProyecto.Models
 {
     public enum Deporte
     {
         Futbol,
-        Voley,
-        Basquet
-
+        Basquet,
+        Tenis,
+        Hockey,
+        Natacion,
+        Otro
     }
 }

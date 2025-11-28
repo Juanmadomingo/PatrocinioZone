@@ -1,22 +1,50 @@
 @{
-    ViewData["Title"] = "Iniciar Sesión";
+    Layout = "_Layout";
+    ViewData["Title"] = "Login";
 }
+<h2 class="text-center mb-4">Iniciar sesión</h2>
 
-<h2>Login</h2>
+<form asp-controller="Account" asp-action="Login" method="post" class="needs-validation" novalidate>
+    <div class="row g-3">
+        <div class="col-12">
+            <label for="email" class="form-label">Email</label>
+            <input id="email" name="email" type="email" class="form-control" required />
+            <div class="invalid-feedback">Introduce un email válido.</div>
+        </div>
 
-<form asp-action="Login" method="post">
-    <div class="mb-3">
-        <label>Email</label>
-        <input name="email" class="form-control" required />
+        <div class="col-12">
+            <label for="password" class="form-label">Contraseña</label>
+            <input id="password" name="password" type="password" class="form-control" required />
+            <div class="invalid-feedback">Introduce tu contraseña.</div>
+        </div>
+
+        <div class="col-12 text-center mt-3">
+            <button type="submit" class="btn btn-primary px-5">Entrar</button>
+        </div>
+
+        <div class="col-12 text-center mt-2">
+            <p class="mb-1">¿No tienes cuenta?</p>
+            <a asp-controller="Account" asp-action="ChooseType" class="btn btn-outline-secondary me-2">Registrarme</a>
+            <a asp-controller="Account" asp-action="RegisterClub" class="btn btn-link">Registrar Club</a>
+            <a asp-controller="Account" asp-action="RegisterPatrocinador" class="btn btn-link">Registrar Patrocinador</a>
+        </div>
     </div>
-
-    <div class="mb-3">
-        <label>Tipo</label>
-        <select name="tipo" class="form-control">
-            <option value="club">Club</option>
-            <option value="patrocinador">Patrocinador</option>
-        </select>
-    </div>
-
-    <button class="btn btn-primary">Ingresar</button>
 </form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>// Bootstrap simple client-side validation
+        (function () {
+            'use strict'
+            var forms = document.querySelectorAll('.needs-validation')
+            Array.prototype.slice.call(forms).forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                    form.classList.add('was-validated')
+                }, false)
+            })
+        })()</script>
+}

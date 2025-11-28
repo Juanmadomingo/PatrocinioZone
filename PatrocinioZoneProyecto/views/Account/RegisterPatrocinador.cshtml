@@ -1,31 +1,59 @@
 @model PatrocinioZoneProyecto.Models.Patrocinador
 
 @{
-    ViewData["Title"] = "Registrar Patrocinador";
+    Layout = "_Layout";
+    ViewData["Title"] = "Registro Patrocinador";
 }
 
-<h2>Registrar Patrocinador</h2>
+<h2 class="text-center mb-4">Registrar Patrocinador</h2>
 
-<form asp-action="RegisterPatrocinador" method="post">
-    <div class="mb-3">
-        <label>Empresa</label>
-        <input asp-for="Empresa" class="form-control" required />
+<form asp-action="RegisterPatrocinador" asp-controller="Account" method="post">
+    @Html.AntiForgeryToken()
+
+    <div class="row g-3">
+        <div class="col-md-6">
+            <label asp-for="Nombre" class="form-label"></label>
+            <input asp-for="Nombre" class="form-control" />
+            <span asp-validation-for="Nombre" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-6">
+            <label asp-for="Empresa" class="form-label"></label>
+            <input asp-for="Empresa" class="form-control" />
+            <span asp-validation-for="Empresa" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-6">
+            <label asp-for="Email" class="form-label"></label>
+            <input asp-for="Email" class="form-control" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-6">
+            <label asp-for="Password" class="form-label"></label>
+            <input asp-for="Password" class="form-control" type="password" />
+            <span asp-validation-for="Password" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-6">
+            <label asp-for="Telefono" class="form-label"></label>
+            <input asp-for="Telefono" class="form-control" />
+            <span asp-validation-for="Telefono" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-6">
+            <label asp-for="MontoDisponible" class="form-label">Monto inicial (opcional)</label>
+            <input asp-for="MontoDisponible" class="form-control" />
+            <span asp-validation-for="MontoDisponible" class="text-danger"></span>
+        </div>
+
+        <div class="col-12 text-center mt-3">
+            <button type="submit" class="btn btn-primary px-5">Registrar Patrocinador</button>
+            <a asp-action="Login" asp-controller="Account" class="btn btn-link">Ir al Login</a>
+        </div>
     </div>
-
-    <div class="mb-3">
-        <label>Email</label>
-        <input asp-for="Email" class="form-control" required />
-    </div>
-
-    <div class="mb-3">
-        <label>Teléfono</label>
-        <input asp-for="Telefono" class="form-control" required />
-    </div>
-
-    <div class="mb-3">
-        <label>Monto Disponible</label>
-        <input asp-for="MontoDisponible" type="number" step="0.01" class="form-control" required />
-    </div>
-
-    <button class="btn btn-success">Registrar</button>
 </form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -20,6 +20,12 @@ namespace PatrocinioZoneProyecto.Controllers
             return View();
         }
 
+        // Acción añadida para la elección del tipo de usuario
+        public IActionResult ChooseType()
+        {
+            return View();
+        }
+
         public IActionResult Login()
         {
             return View();
@@ -42,7 +48,8 @@ namespace PatrocinioZoneProyecto.Controllers
             {
                 HttpContext.Session.SetString("UserType", "Club");
                 HttpContext.Session.SetInt32("UserId", club.Id);
-                return RedirectToAction("Index", "Club");
+                // Redirigir al Home después de login
+                return RedirectToAction("Index", "Home");
             }
 
             // Buscar PATROCINADOR
@@ -53,7 +60,8 @@ namespace PatrocinioZoneProyecto.Controllers
             {
                 HttpContext.Session.SetString("UserType", "Patrocinador");
                 HttpContext.Session.SetInt32("UserId", patrocinador.Id);
-                return RedirectToAction("Index", "Patrocinador");
+                // Redirigir al Home después de login
+                return RedirectToAction("Index", "Home");
             }
 
             ViewBag.Error = "Email o contraseña incorrectos.";
@@ -88,6 +96,7 @@ namespace PatrocinioZoneProyecto.Controllers
             _context.Clubes.Add(club);
             _context.SaveChanges();
 
+            // Después de registrarse, ir al Login
             return RedirectToAction("Login");
         }
 
@@ -113,6 +122,7 @@ namespace PatrocinioZoneProyecto.Controllers
             _context.Patrocinadores.Add(patrocinador);
             _context.SaveChanges();
 
+            // Después de registrarse, ir al Login
             return RedirectToAction("Login");
         }
     }

@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PatrocinioZoneProyecto.Data;
 using PatrocinioZoneProyecto.Models;
+using Microsoft.AspNetCore.Http;
+using System.Linq;
 
 namespace PatrocinioZoneProyecto.Controllers
 {
@@ -29,38 +31,51 @@ namespace PatrocinioZoneProyecto.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Register(Patrocinador patrocinador)
         {
-            if (ModelState.IsValid)
-            {
-                patrocinador.MontoDisponible = 10000; // monto inicial
-                _context.Patrocinadores.Add(patrocinador);
-                _context.SaveChanges();
+            if (!ModelState.IsValid)
+                return View(patrocinador);
 
-                TempData["Success"] = "Cuenta creada con éxito. Ahora podés iniciar sesión.";
-                return RedirectToAction("Login", "Account");
+            var exists = _context.Patrocinadores.Any(p => p.Email == patrocinador.Email);
+            if (exists)
+            {
+                ModelState.AddModelError(nameof(patrocinador.Email), "Ya existe un patrocinador con ese email.");
+                return View(patrocinador);
             }
 
-            return View(patrocinador);
+            patrocinador.MontoDisponible = patrocinador.MontoDisponible <= 0 ? 10000m : patrocinador.MontoDisponible;
+            _context.Patrocinadores.Add(patrocinador);
+            _context.SaveChanges();
+
+            TempData["Success"] = "Cuenta creada con éxito. Ahora podés iniciar sesión.";
+            return RedirectToAction("Login", "Account");
         }
 
         // ========================
-        //   INDEX (ZONAS DISPONIBLES)
+        //   INDEX (ZONAS DISPONIBLES) + búsqueda opcional
         // ========================
-        public IActionResult Index()
+        public IActionResult Index(string q = null)
         {
             int? patId = HttpContext.Session.GetInt32("UserId");
             if (patId == null || HttpContext.Session.GetString("UserType") != "Patrocinador")
                 return RedirectToAction("Login", "Account");
 
-            var zonas = _context.ZonasPatrocinio
+            var query = _context.ZonasPatrocinio
                 .Where(z => z.PatrocinadorId == null)
                 .Include(z => z.Club)
-                .ToList();
+                .AsQueryable();
 
+            if (!string.IsNullOrWhiteSpace(q))
+            {
+                q = q.Trim().ToLower();
+                query = query.Where(z => z.Nombre.ToLower().Contains(q) || z.Descripcion.ToLower().Contains(q) || z.Club.Nombre.ToLower().Contains(q));
+            }
+
+            var zonas = query.ToList();
+            ViewBag.Query = q;
             return View(zonas);
         }
 
         // ========================
-        //   COMPRAR GET
+        //   COMPRA — GET (confirmación)
         // ========================
         public IActionResult Comprar(int id)
         {
@@ -75,11 +90,17 @@ namespace PatrocinioZoneProyecto.Controllers
             if (zona == null)
                 return NotFound();
 
+            if (zona.PatrocinadorId != null)
+            {
+                TempData["Error"] = "La zona ya fue comprada.";
+                return RedirectToAction("Index");
+            }
+
             return View(zona);
         }
 
         // ========================
-        //   COMPRAR POST CONFIRMADO
+        //   COMPRA — POST (confirmado)
         // ========================
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -89,6 +110,7 @@ namespace PatrocinioZoneProyecto.Controllers
             if (patId == null || HttpContext.Session.GetString("UserType") != "Patrocinador")
                 return RedirectToAction("Login", "Account");
 
+            // Recuperamos zona y patrocinador con locking mínimo
             var zona = _context.ZonasPatrocinio
                 .Include(z => z.Club)
                 .FirstOrDefault(z => z.Id == id);
@@ -103,8 +125,14 @@ namespace PatrocinioZoneProyecto.Controllers
 
             if (zona.PatrocinadorId != null)
             {
-                TempData["Error"] = "La zona ya fue comprada.";
+                TempData["Error"] = "La zona ya fue comprada por otro usuario.";
                 return RedirectToAction("Index");
+            }
+
+            if (patrocinador == null)
+            {
+                TempData["Error"] = "Patrocinador no encontrado.";
+                return RedirectToAction("Login", "Account");
             }
 
             if (patrocinador.MontoDisponible < zona.Precio)
@@ -113,14 +141,38 @@ namespace PatrocinioZoneProyecto.Controllers
                 return RedirectToAction("Index");
             }
 
-            // Actualizar
-            zona.PatrocinadorId = patId.Value;
+            // Marcar la zona como comprada y actualizar montos
+            zona.PatrocinadorId = patrocinador.Id;
             patrocinador.MontoDisponible -= zona.Precio;
+
+            // Sumar al monto del club (acumular ingresos)
+            var club = _context.Clubes.Find(zona.ClubId);
+            if (club != null)
+            {
+                club.MontoBase += zona.Precio;
+            }
 
             _context.SaveChanges();
 
             TempData["Success"] = $"Compra exitosa: adquiriste la zona '{zona.Nombre}' por ${zona.Precio}.";
-            return RedirectToAction("Index");
+            return RedirectToAction("MisPatrocinios");
+        }
+
+        // ========================
+        //   MIS PATROCINIOS (lo que compró el patrocinador)
+        // ========================
+        public IActionResult MisPatrocinios()
+        {
+            int? patId = HttpContext.Session.GetInt32("UserId");
+            if (patId == null || HttpContext.Session.GetString("UserType") != "Patrocinador")
+                return RedirectToAction("Login", "Account");
+
+            var zonas = _context.ZonasPatrocinio
+                .Where(z => z.PatrocinadorId == patId.Value)
+                .Include(z => z.Club)
+                .ToList();
+
+            return View(zonas);
         }
 
         // ========================
@@ -133,4 +185,3 @@ namespace PatrocinioZoneProyecto.Controllers
         }
     }
 }
-
