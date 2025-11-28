@@ -2,40 +2,27 @@
 using PatrocinioZoneProyecto.Data;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// 1️⃣ Controladores con vistas (MVC)
-builder.Services.AddControllersWithViews();
-
-// 2️⃣ Conexión a la base de datos
+// CONFIGURAR SQL SERVER
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
+);
 
-// 3️⃣ Agregar SESSION (ANTES del Build)
+// SESSION
+builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession();
+
+// MVC
+builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-// 4️⃣ Pipeline
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Home/Error");
-    app.UseHsts();
-}
-
-app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
+app.UseSession();
 
-app.UseSession(); // 5️⃣ Session SIEMPRE antes de MapControllerRoute
-
-// Si tuvieras roles/autorización, va aquí:
-// app.UseAuthorization();
-
-// 6️⃣ Ruta por defecto
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Account}/{action=Register}/{id?}");
+    pattern: "{controller=Account}/{action=ChooseType}/{id?}"
+);
 
 app.Run();
-

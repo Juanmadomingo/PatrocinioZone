@@ -2,6 +2,16 @@
 
     <h2>Zonas disponibles para patrocinar</h2>
 
+    @if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+    @if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
     <table class="table table-striped">
         <thead>
             <tr>
@@ -18,11 +28,18 @@
                 <td>@zona.Nombre</td>
                 <td>@zona.Club.Nombre</td>
                 <td>$@zona.Precio</td>
-
                 <td>
+                    @if (zona.PatrocinadorId == null)
+                    {
                     <a href="/Patrocinador/Comprar/@zona.Id" class="btn btn-success">Comprar</a>
+                    }
+                    else
+                    {
+                    <span class="badge bg-danger">VENDIDA</span>
+                    }
                 </td>
             </tr>
         }
         </tbody>
     </table>
+

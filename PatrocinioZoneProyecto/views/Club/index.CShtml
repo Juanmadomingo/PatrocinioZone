@@ -2,13 +2,20 @@
 
     <h2>Zonas del Club</h2>
 
+    @if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
     <a class="btn btn-primary mb-3" href="/Club/CrearZona">Crear nueva zona</a>
 
     <table class="table table-striped">
         <thead>
             <tr>
                 <th>Nombre</th>
+                <th>Descripción</th>
                 <th>Precio</th>
+                <th>Ubicación</th>
                 <th>Vendida</th>
             </tr>
         </thead>
@@ -17,12 +24,10 @@
         {
             <tr>
                 <td>@zona.Nombre</td>
+                <td>@zona.Descripcion</td>
                 <td>$@zona.Precio</td>
+                <td>@zona.Ubicacion</td>
                 <td>@(zona.PatrocinadorId != null ? "Sí" : "No")</td>
-
-                <td>
-                    <a class="btn btn-warning" href="/Club/EditarZona/@zona.Id">Editar</a>
-                </td>
             </tr>
         }
         </tbody>

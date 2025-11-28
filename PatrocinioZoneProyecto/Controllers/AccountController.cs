@@ -15,25 +15,16 @@ namespace PatrocinioZoneProyecto.Controllers
             _context = context;
         }
 
-        // ========================
-        //      SELECCION INICIO
-        // ========================
         public IActionResult Index()
         {
             return View();
         }
 
-        // ========================
-        //      LOGIN GET
-        // ========================
         public IActionResult Login()
         {
             return View();
         }
 
-        // ========================
-        //      LOGIN POST
-        // ========================
         [HttpPost]
         public IActionResult Login(string email, string password)
         {
@@ -43,7 +34,7 @@ namespace PatrocinioZoneProyecto.Controllers
                 return View();
             }
 
-            // 1) BUSCAR CLUB
+            // Buscar CLUB
             var club = _context.Clubes
                 .FirstOrDefault(c => c.Email == email && c.Password == password);
 
@@ -54,7 +45,7 @@ namespace PatrocinioZoneProyecto.Controllers
                 return RedirectToAction("Index", "Club");
             }
 
-            // 2) BUSCAR PATROCINADOR
+            // Buscar PATROCINADOR
             var patrocinador = _context.Patrocinadores
                 .FirstOrDefault(p => p.Email == email && p.Password == password);
 
@@ -69,26 +60,17 @@ namespace PatrocinioZoneProyecto.Controllers
             return View();
         }
 
-        // ========================
-        //      LOGOUT
-        // ========================
         public IActionResult Logout()
         {
             HttpContext.Session.Clear();
             return RedirectToAction("Login");
         }
 
-        // ========================
-        //      REGISTER CLUB GET
-        // ========================
         public IActionResult RegisterClub()
         {
             return View();
         }
 
-        // ========================
-        //      REGISTER CLUB POST
-        // ========================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult RegisterClub(Club club)
@@ -96,11 +78,10 @@ namespace PatrocinioZoneProyecto.Controllers
             if (!ModelState.IsValid)
                 return View(club);
 
-            // Evitar emails duplicados
             var exists = _context.Clubes.Any(c => c.Email == club.Email);
             if (exists)
             {
-                ModelState.AddModelError("Email", "Ya existe un usuario con ese email.");
+                ModelState.AddModelError("Email", "Ya existe un club con ese email.");
                 return View(club);
             }
 
@@ -110,17 +91,11 @@ namespace PatrocinioZoneProyecto.Controllers
             return RedirectToAction("Login");
         }
 
-        // ========================
-        //  REGISTER PATROCINADOR GET
-        // ========================
         public IActionResult RegisterPatrocinador()
         {
             return View();
         }
 
-        // ========================
-        //  REGISTER PATROCINADOR POST
-        // ========================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult RegisterPatrocinador(Patrocinador patrocinador)
@@ -131,7 +106,7 @@ namespace PatrocinioZoneProyecto.Controllers
             var exists = _context.Patrocinadores.Any(p => p.Email == patrocinador.Email);
             if (exists)
             {
-                ModelState.AddModelError("Email", "Ya existe un usuario con ese email.");
+                ModelState.AddModelError("Email", "Ya existe un patrocinador con ese email.");
                 return View(patrocinador);
             }
 
